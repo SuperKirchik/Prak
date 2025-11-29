@@ -19,7 +19,7 @@ int is_special_word(const char *str, size_t len) {
 }
 
 // Получение максимальной длины специального слова, начинающегося с данной позиции
-size_t get_special_word_length(const char *str) {
+size_t special_word_dlina(const char *str) {
     size_t max_len = 0;
     for (int i = 0; special_words[i] != NULL; i++) {
         size_t len = strlen(special_words[i]);
@@ -42,7 +42,7 @@ void del_string(const char *input, StringList *tokens) {
         }
         
         // Проверяем, является ли текущая позиция началом специального слова
-        size_t special_len = get_special_word_length(input + i);
+        size_t special_len = special_word_dlina(input + i);
         if (special_len > 0) {
             char *special_word = malloc(special_len + 1);
             strncpy(special_word, input + i, special_len);
@@ -55,7 +55,7 @@ void del_string(const char *input, StringList *tokens) {
         
         // Обычное слово
         size_t start = i;
-        while (i < len && !isspace(input[i]) && get_special_word_length(input + i) == 0) {
+        while (i < len && !isspace(input[i]) && special_word_dlina(input + i) == 0) {
             i++;
         }
         

@@ -3,12 +3,12 @@
 #include <string.h>
 #include "list.h"
 
-#define INITIAL_CAPACITY 10
+#define DLINA 10
 
 void init_list(StringList *list) {
-    list->items = malloc(INITIAL_CAPACITY * sizeof(char *));
+    list->items = malloc(DLINA * sizeof(char *));
     list->size = 0;
-    list->capacity = INITIAL_CAPACITY;
+    list->capacity = DLINA;
 }
 
 void add_string(StringList *list, const char *str) {
