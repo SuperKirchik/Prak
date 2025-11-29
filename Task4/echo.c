@@ -20,9 +20,7 @@ int main(int argc, char *argv[]) {
     // Вывод аргументов
     for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-') continue;
-        
         if (e_flag) {
-            // Простая обработка escape-последовательностей
             char *p = argv[i];
             while (*p) {
                 if (*p == '\\' && *(p+1) == 'n') {

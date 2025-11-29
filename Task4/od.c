@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <string.h>
 
 void print_character(unsigned char c) {
     if (isprint(c) && c != '\\') {

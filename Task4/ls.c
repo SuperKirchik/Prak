@@ -6,6 +6,7 @@
 #include <time.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>  // Добавляем для ssize_t
 
 void print_permissions(mode_t mode) {
     printf((S_ISDIR(mode)) ? "d" : "-");
@@ -31,7 +32,6 @@ void list_directory(const char *dirname, int l_flag, int g_flag, int R_flag) {
     }
     
     while ((entry = readdir(dir)) != NULL) {
-        // Пропускаем скрытые файлы (кроме тех, что начинаются с .)
         if (entry->d_name[0] == '.' && !l_flag) continue;
         
         char fullpath[1024];
@@ -44,7 +44,7 @@ void list_directory(const char *dirname, int l_flag, int g_flag, int R_flag) {
         
         if (l_flag) {
             print_permissions(file_stat.st_mode);
-            printf(" %2lu", file_stat.st_nlink);
+            printf(" %2lu", (unsigned long)file_stat.st_nlink);  
             
             struct passwd *pw = getpwuid(file_stat.st_uid);
             printf(" %s", pw ? pw->pw_name : "?");
@@ -54,7 +54,7 @@ void list_directory(const char *dirname, int l_flag, int g_flag, int R_flag) {
                 printf(" %s", gr ? gr->gr_name : "?");
             }
             
-            printf(" %8ld", file_stat.st_size);
+            printf(" %8ld", (long)file_stat.st_size);  
             
             char timebuf[80];
             struct tm *timeinfo = localtime(&file_stat.st_mtime);
@@ -63,10 +63,9 @@ void list_directory(const char *dirname, int l_flag, int g_flag, int R_flag) {
             
             printf(" %s", entry->d_name);
             
-            // Показываем символические ссылки
             if (S_ISLNK(file_stat.st_mode)) {
                 char linkbuf[1024];
-                ssize_t len = readlink(fullpath, linkbuf, sizeof(linkbuf)-1);
+                int len = readlink(fullpath, linkbuf, sizeof(linkbuf)-1);  
                 if (len != -1) {
                     linkbuf[len] = '\0';
                     printf(" -> %s", linkbuf);
@@ -78,7 +77,6 @@ void list_directory(const char *dirname, int l_flag, int g_flag, int R_flag) {
             printf("%s\n", entry->d_name);
         }
         
-        // Рекурсивный обход для -R
         if (R_flag && S_ISDIR(file_stat.st_mode) && 
             strcmp(entry->d_name, ".") != 0 && 
             strcmp(entry->d_name, "..") != 0) {
@@ -94,7 +92,6 @@ int main(int argc, char *argv[]) {
     int l_flag = 0, g_flag = 0, R_flag = 0;
     char *dirname = ".";
     
-    // Обработка флагов
     for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-') {
             if (strchr(argv[i], 'l')) l_flag = 1;
